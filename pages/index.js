@@ -7,6 +7,7 @@ import Widget from '../src/components/Widget/index'
 import Footer from '../src/components/Footer/index'
 import GithubCorner from '../src/components/GithubCorner/index'
 import QuizBackground from '../src/components/QuizBackground/index'
+import AluraLogo from '../src/components/AluraLogo/index'
 
 
 
@@ -32,6 +33,7 @@ export default function Home() {
         <title>Alura Quiz</title>
       </Head>
       <QuizContainer>
+        <AluraLogo />
         <Widget>
           <Widget.Header>
               <h1>The legend of Soccer</h1>
