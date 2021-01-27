@@ -17,12 +17,15 @@
       },
       {
         "image": "https://media.giphy.com/media/13FrpeVH09Zrb2/giphy.gif",
-        "title": "Como fazer um background gradiente com css?",
+        "title": "Pele is Brazil's top goalscorer of all-time. But who is second on the list?",
         "description": "Faz tempo em haha",
         "answer": 0,
         "alternatives": [
-           "background: linear-gradient(#e66465, #9198e5);",
-           "background: gradient(#e66465, #9198e5);"
+           "Romário",
+           "Ronaldo",
+           "Zico",
+           "Bebeto"
+
         ]
       }
     ],

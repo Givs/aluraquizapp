@@ -9,17 +9,10 @@ import Footer from '../src/components/Footer/index';
 import GithubCorner from '../src/components/GithubCorner/index';
 import QuizBackground from '../src/components/QuizBackground/index';
 import AluraLogo from '../src/components/AluraLogo/index';
+import Input from '../src/components/Input/index';
+import Button from '../src/components/Button/index';
+import QuizContainer from '../src/components/QuizContainer/index';
 
-export const QuizContainer = styled.div`
-  width: 100%;
-  max-width:350px;
-  padding-top: 45px;
-  margin: auto 10%;
-  @media screen and (max-width: 500px){
-    margin: auto;
-    padding: 15px
-  }
-`;
 
 export default function Home() {
   const router = useRouter();
@@ -38,21 +31,23 @@ export default function Home() {
             <h1>The legend of Soccer</h1>
           </Widget.Header>
           <Widget.Content>
-            <form onSubmit={(e) => {
+            <form onSubmit={e => {
               router.push(`/quizes?name=${name}`);
               e.preventDefault();
               console.log('Submit');
             }}
             >
-              <input
+              <Input
+                name="nomeDoUsuario"
                 type="text"
                 placeholder="Digite o seu nome para jogar"
-                onChange={(e) => {
+                onChange={e => {
                   setName(e.target.value);
                 }}
+                value={name}
               />
 
-              <button type="submit" disabled={name.length === 0}> Jogar </button>
+              <Button type="submit" disabled={name.length === 0}> Play </Button>
             </form>
           </Widget.Content>
         </Widget>
