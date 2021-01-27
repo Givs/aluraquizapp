@@ -28,12 +28,12 @@ function LoadingScreen() {
   )
 }
 
-function QuestionWidget({questions, totalQuestions, questionIndex}) {
+function QuestionWidget({questions, totalQuestions, questionIndex, onSubmit}) {
   const questionId = `question__${questionIndex}`
   return (
     <Widget>
           <Widget.Header>
-            <h3>{`Question ${questionIndex} from ${totalQuestions}`}</h3>
+            <h3>{`Question ${questionIndex + 1} from ${totalQuestions}`}</h3>
           </Widget.Header>
 
           <img   
@@ -55,7 +55,10 @@ function QuestionWidget({questions, totalQuestions, questionIndex}) {
               {questions.description}
             </p>
 
-            <form>
+            <form onSubmit={e => {
+              e.preventDefault()
+              onSubmit()
+            }}>
               {questions.alternatives.map((alternative, alternativeIndex) => {
                 const alternativeId = `alternative__${alternativeIndex}`
                 return (
@@ -83,7 +86,7 @@ const screenStates = {
 export default function QuizesPage() {
   const [screenState, setScreenState] = React.useState(screenStates.LOADING) 
   const totalQuestions = db.questions.length
-  const questionIndex = 1 
+  const [questionIndex, setQuestionIndex] = React.useState(0)
   const questions = db.questions[questionIndex]
 
   React.useEffect(() => {
@@ -92,6 +95,15 @@ export default function QuizesPage() {
   
     }, 1000)
   }, [])
+
+  function handleSubmit(){
+    const nextQuestion = questionIndex + 1
+    if(nextQuestion < totalQuestions){
+      setQuestionIndex(questionIndex + 1)
+    }else{
+      setScreenState(screenStates.RESULTS)
+    }
+  }
 
   return (
     <QuizBackground backgroundImage={db.bg}>
@@ -102,6 +114,7 @@ export default function QuizesPage() {
               questions={questions} 
               totalQuestions={totalQuestions}
               questionIndex={questionIndex}
+              onSubmit={handleSubmit}
             />)}
         {screenState === screenStates.LOADING && <LoadingScreen />}
 
