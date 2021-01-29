@@ -29,7 +29,11 @@ function LoadingScreen() {
 }
 
 function QuestionWidget({questions, totalQuestions, questionIndex, onSubmit}) {
+
+  const [selectedAlternative, setSelectedAlternative] = React.useState()
   const questionId = `question__${questionIndex}`
+  const isCorret = selectedAlternative === questions.answer
+  
   return (
     <Widget>
           <Widget.Header>
@@ -62,14 +66,25 @@ function QuestionWidget({questions, totalQuestions, questionIndex, onSubmit}) {
               {questions.alternatives.map((alternative, alternativeIndex) => {
                 const alternativeId = `alternative__${alternativeIndex}`
                 return (
-                  <Widget.Topic htmlFor={alternativeId } as="label">
-                    <input id={alternativeId} name={questionId} type="radio"/>
+                  <Widget.Topic 
+                    as="label" 
+                    key={alternativeId} 
+                    htmlFor={alternativeId} 
+                  >
+                    <input 
+                      id={alternativeId} 
+                      name={questionId} 
+                      type="radio"
+                      onChange={() => setSelectedAlternative(alternativeIndex)}
+                    />
                     {alternative}
                   </Widget.Topic>
                 )
               })}
 
               <Button type="submit">Confirm</Button>
+              {isCorret &&  <p>Right!</p>}
+              {!isCorret && <p>Wrong!</p>}
             </form>
           </Widget.Content>
         </Widget>
