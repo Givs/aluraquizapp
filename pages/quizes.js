@@ -5,13 +5,13 @@ import styled from 'styled-components';
 
 
 import Widget from '../src/components/Widget/index';
-import Footer from '../src/components/Footer/index';
 import GithubCorner from '../src/components/GithubCorner/index';
 import QuizBackground from '../src/components/QuizBackground/index';
 import AluraLogo from '../src/components/AluraLogo/index';
 import Input from '../src/components/Input/index';
 import Button from '../src/components/Button/index';
 import QuizContainer from '../src/components/QuizContainer/index';
+import AlternativeForm from '../src/components/AlternativeForm/index';
 
 
 function LoadingScreen() {
@@ -28,16 +28,45 @@ function LoadingScreen() {
   )
 }
 
-function QuestionWidget({questions, totalQuestions, questionIndex, onSubmit}) {
+function ResulScreen({ results }) {
+  return (
+    <Widget>
+      <Widget.Header>
+        Your Results
+      </Widget.Header>
 
-  const [selectedAlternative, setSelectedAlternative] = React.useState()
+      <Widget.Content>
+        <p>Congrats! You have finished the challenge and you got:
+          {' '}
+          {results.filter((x) => x).length }
+          {' '}
+          right questions!</p>
+        <p>Check out the details:</p>
+        <ul>
+          {results.map((result, index) => (
+            <li key={`result__${result}`}>
+              Question {index+1}: {result === true ? 'Right' : 'Wrong'}
+            </li>
+          ))}
+          
+        </ul>
+      </Widget.Content  >
+    </Widget>
+  )
+}
+
+function QuestionWidget({questions, totalQuestions, questionIndex, onSubmit, addResult}) {
+
+  const [selectedAlternative, setSelectedAlternative] = React.useState(undefined)
+  const [isQuestionSubmited, setisQuestionSubmited] = React.useState(false)
   const questionId = `question__${questionIndex}`
-  const isCorret = selectedAlternative === questions.answer
+  const isCorret = selectedAlternative === questions.answer   //validation
+  const isAlternativeSelected = selectedAlternative !== undefined
   
   return (
     <Widget>
           <Widget.Header>
-            <h3>{`Question ${questionIndex + 1} from ${totalQuestions}`}</h3>
+            <h3>{`Question ${questionIndex + 1} of ${totalQuestions}`}</h3>
           </Widget.Header>
 
           <img   
@@ -59,17 +88,29 @@ function QuestionWidget({questions, totalQuestions, questionIndex, onSubmit}) {
               {questions.description}
             </p>
 
-            <form onSubmit={e => {
+            <AlternativeForm onSubmit={e => {
               e.preventDefault()
-              onSubmit()
+              setisQuestionSubmited(true)
+              setTimeout(() => {
+                onSubmit()
+                addResult(isCorret)
+                setisQuestionSubmited(false)
+                setSelectedAlternative(undefined)
+              }, 4000)
             }}>
               {questions.alternatives.map((alternative, alternativeIndex) => {
+
+                const AlternativeStatus = isCorret ? 'SUCCESS' : 'ERROR'
+                const isSelected = selectedAlternative === alternativeIndex
                 const alternativeId = `alternative__${alternativeIndex}`
+                
                 return (
                   <Widget.Topic 
                     as="label" 
                     key={alternativeId} 
                     htmlFor={alternativeId} 
+                    data-selected={isSelected}
+                    data-status={isQuestionSubmited && AlternativeStatus}
                   >
                     <input 
                       id={alternativeId} 
@@ -82,10 +123,10 @@ function QuestionWidget({questions, totalQuestions, questionIndex, onSubmit}) {
                 )
               })}
 
-              <Button type="submit">Confirm</Button>
-              {isCorret &&  <p>Right!</p>}
-              {!isCorret && <p>Wrong!</p>}
-            </form>
+              <Button type="submit" disabled={!isAlternativeSelected}>Confirm</Button>
+              {isQuestionSubmited &&  isCorret &&  <p>Right!</p>}
+              {isQuestionSubmited &&  !isCorret && <p>Wrong!</p>}
+            </AlternativeForm>
           </Widget.Content>
         </Widget>
   )
@@ -103,6 +144,15 @@ export default function QuizesPage() {
   const totalQuestions = db.questions.length
   const [questionIndex, setQuestionIndex] = React.useState(0)
   const questions = db.questions[questionIndex]
+  const [results, setResults] = React.useState([]) 
+
+  function addResult(result){
+    setResults ([
+      ...results,
+      result,
+    ])
+  }
+
 
   React.useEffect(() => {
     setTimeout(() => {
@@ -130,10 +180,11 @@ export default function QuizesPage() {
               totalQuestions={totalQuestions}
               questionIndex={questionIndex}
               onSubmit={handleSubmit}
+              addResult={addResult}
             />)}
         {screenState === screenStates.LOADING && <LoadingScreen />}
 
-        {screenState === screenStates.RESULTS && <div>You got x questions</div>}
+        {screenState === screenStates.RESULTS && <ResulScreen results={results}/>}
         </QuizContainer>
       <GithubCorner projectUrl="https://github.com/Givs" />
     </QuizBackground>
